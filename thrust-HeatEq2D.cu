@@ -20,17 +20,17 @@ using namespace std::chrono;
 void   swap
 // ====================================================================
 //
-// purpos     :  update the variable fn --> f
+// purpose    :  update the variable fn --> f
 //
-// date       :  Jul 03, 2001
-// programmer :  Takayuki Aoki
-// place      :  Tokyo Institute of Technology
-//
+// date       :  2018/09/17
+// programmer :  Muhammad Izham
+// place      :  Universiti Malaysia Perlis
+// note       :  Original code credit to Takayuki Aoki, Tokyo Institute
+//               of Technology
 (
    float   **f,        /* dependent variable                        */
    float   **fn        /* updated variable                          */
 )
-// --------------------------------------------------------------------
 {
      float  *tmp = *f;   *f = *fn;   *fn = tmp;
 }
