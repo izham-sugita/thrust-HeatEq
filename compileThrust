@@ -1,0 +1,2 @@
+nvcc -I. -std=c++11 -O3 thrust-HeatEq2D.cu -o thrust-HeatEq2D
+
