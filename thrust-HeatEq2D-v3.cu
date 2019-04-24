@@ -19,25 +19,6 @@
 using namespace std;
 using namespace std::chrono;
 
-void   swap
-// ====================================================================
-//
-// purpose    :  update the variable fn --> f
-//
-// date       :  2018/09/17
-// programmer :  Muhammad Izham
-// place      :  Universiti Malaysia Perlis
-// note       :  Original code credit to Takayuki Aoki, Tokyo Institute
-//               of Technology
-(
-   float   **f,        /* dependent variable                        */
-   float   **fn        /* updated variable                          */
-)
-{
-     float  *tmp = *f;   *f = *fn;   *fn = tmp;
-}
-
-
 //Heat equation kernel
 __global__  void  HeatEq2D
 // ====================================================================
@@ -138,19 +119,6 @@ int main()
     }
   }
   finit.close();
-
-  FILE *fp0;
-  fp0 = fopen("initHeatOld.csv","w");
-  fprintf(fp0,"x, y, z, temp\n");
-  for(int i=0; i<imax; ++i){
-    for(int j=0; j<jmax; ++j){
-      int id = i*jmax + j;
-      float xg = (float)i*dx;
-      float yg = (float)j*dy;
-      fprintf(fp0,"%f, %f, %f, %f\n", xg, yg, h_test[id], h_test[id]);
-	}
-  }
-  fclose(fp0);
   
   thrust::device_vector<float> d_Told = h_Told;
   thrust::device_vector<float> d_Tnew = h_Tnew;
@@ -165,27 +133,27 @@ int main()
   dim3 grid(imax/blockDimX, jmax/blockDimY, 1);
   dim3 threads(blockDimX, blockDimY, 1);
   
-
+  int iter;
   double flops = 0.0f;
 
   high_resolution_clock::time_point t1=high_resolution_clock::now();  
   
-  for(int iter=0; iter<itermax; ++iter){
-  /*Calling kernel*/
+  for(iter=0; iter<itermax; iter+=interval){
+
+    for(int j=iter; j<iter+interval; ++j){    
+    /*Calling kernel*/
   HeatEq2D<<<grid,threads>>>(d_ToldPointer,
 				       d_TnewPointer,
 				       imax,jmax,c0,c1,c2);
-
-  
   //Update device_vector
   //d_Told = d_Tnew;
-
-  //swap(&d_ToldPointer,&d_TnewPointer); //the best way to swap!
-  std::swap(d_ToldPointer, d_TnewPointer); // from algorithm
-
-  if(iter%interval==0) cout<<"Iterations: "<<iter<<endl;
   
+  std::swap(d_ToldPointer, d_TnewPointer); // from algorithm
   flops = flops + 7.0*((float)imax * (float)jmax);
+    }
+  
+    //if(iter%interval==0) cout<<"Iterations: "<<iter<<endl;
+    cout<<"Iterations: "<<iter<<endl;
   
   }/*end time loop*/
 
