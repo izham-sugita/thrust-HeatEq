@@ -66,9 +66,6 @@ if(jy > 0 && jy < ny-1){
 int main()
 {
 
-  int imax = 128;
-  int jmax = 128;
-
   cout<<"Enter imax, jmax \n";
   cin>>imax>>jmax;
 
